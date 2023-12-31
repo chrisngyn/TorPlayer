@@ -86,7 +86,7 @@ func main() {
 			},
 			Preferences: &mac.Preferences{
 				TabFocusesLinks:        mac.Enabled,
-				TextInteractionEnabled: mac.Disabled,
+				TextInteractionEnabled: mac.Enabled, // set is false, users will not be able to input text.
 				FullscreenEnabled:      mac.Enabled,
 			},
 		},

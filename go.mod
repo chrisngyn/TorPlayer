@@ -4,7 +4,10 @@ go 1.21
 
 toolchain go1.21.5
 
-require github.com/wailsapp/wails/v2 v2.7.1
+require (
+	github.com/anacrolix/torrent v1.53.2
+	github.com/wailsapp/wails/v2 v2.7.1
+)
 
 require (
 	github.com/RoaringBitmap/roaring v1.2.3 // indirect
@@ -23,7 +26,6 @@ require (
 	github.com/anacrolix/multiless v0.3.0 // indirect
 	github.com/anacrolix/stm v0.4.0 // indirect
 	github.com/anacrolix/sync v0.5.1 // indirect
-	github.com/anacrolix/torrent v1.53.2 // indirect
 	github.com/anacrolix/upnp v0.1.3-0.20220123035249-922794e51c96 // indirect
 	github.com/anacrolix/utp v0.1.0 // indirect
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
