@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
+import { AddTorrentFromFileContent, AddTorrentFromString } from "../../wailsjs/go/main/App";
 
 const router = useRouter();
 
@@ -28,20 +29,22 @@ const onFileInputChange = (ev: HTMLInputEvent | DragEvent) => {
 };
 
 const getInfo = async () => {
+  let hashInfo = "";
   if (textInput.value) {
-    if (textInput.value.startsWith("magnet")) {
-      console.log("magnet");
-    } else if (textInput.value.startsWith("http")) {
-      console.log("http");
-    } else {
-      console.log("hash");
-    }
+    console.log("text");
+    hashInfo = await AddTorrentFromString(textInput.value);
   } else if (fileInput.value) {
     console.log("file");
     const arrBuf = await fileInput.value.arrayBuffer();
+
+    hashInfo = await AddTorrentFromFileContent(Array.from(new Uint8Array(arrBuf)));
     console.log(new TextDecoder("utf-8").decode(arrBuf));
+  } else {
+    return;
   }
-  // await router.push({ name: "video", params: { id: "123" } });
+
+  console.log(hashInfo);
+  // await router.push({ name: "files", params: { id: hashInfo } });
 };
 
 const disableGetInfo = computed<boolean>(() => {

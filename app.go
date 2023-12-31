@@ -1,10 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/anacrolix/torrent"
+	"github.com/anacrolix/torrent/metainfo"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
@@ -12,6 +16,7 @@ type App struct {
 	ctx context.Context
 
 	torrentClient *torrent.Client
+	torrentFiles  map[metainfo.Hash]*torrent.Torrent
 }
 
 // NewApp creates a new App application struct
@@ -34,6 +39,7 @@ func (a *App) startup(ctx context.Context) {
 		log.Fatalf("Failed to create torrent client: %s", err)
 	}
 	a.torrentClient = client
+	a.torrentFiles = make(map[metainfo.Hash]*torrent.Torrent)
 
 }
 
@@ -59,4 +65,27 @@ func (a *App) shutdown(ctx context.Context) {
 			log.Printf("Failed to close torrent client: %v", err)
 		}
 	}
+}
+
+func (a *App) AddTorrentFromString(torrentString string) (string, error) {
+	runtime.LogDebug(a.ctx, fmt.Sprintf("AddTorrentFromString: %s", torrentString))
+	// TODO: Implement
+	return "", nil
+}
+
+func (a *App) AddTorrentFromFileContent(content []byte) (string, error) {
+	runtime.LogDebug(a.ctx, fmt.Sprintf("AddTorrentFromFileContent with lenght %d", len(content)))
+	info, err := metainfo.Load(bytes.NewReader(content))
+	if err != nil {
+		return "", fmt.Errorf("load metainfo: %s", err)
+	}
+
+	tor, err := a.torrentClient.AddTorrent(info)
+	if err != nil {
+		return "", fmt.Errorf("add torrent: %s", err)
+	}
+
+	a.torrentFiles[tor.InfoHash()] = tor
+
+	return tor.InfoHash().String(), nil
 }
