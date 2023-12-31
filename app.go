@@ -2,11 +2,16 @@ package main
 
 import (
 	"context"
+	"log"
+
+	"github.com/anacrolix/torrent"
 )
 
 // App struct
 type App struct {
 	ctx context.Context
+
+	torrentClient *torrent.Client
 }
 
 // NewApp creates a new App application struct
@@ -18,6 +23,18 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	// Perform your setup here
 	a.ctx = ctx
+
+	cfg := torrent.NewDefaultClientConfig()
+	// TODO: change this config (maybe to temp folder)
+	cfg.DataDir = "/Users/lap14897/Desktop/torrent"
+	cfg.Debug = true
+
+	client, err := torrent.NewClient(cfg)
+	if err != nil {
+		log.Fatalf("Failed to create torrent client: %s", err)
+	}
+	a.torrentClient = client
+
 }
 
 // domReady is called after the front-end dom has been loaded
