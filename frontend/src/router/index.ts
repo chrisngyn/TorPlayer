@@ -15,8 +15,8 @@ const router = createRouter({
       component: () => import("@/views/FilesView.vue"),
     },
     {
-      path: "/video/:id",
-      name: "video",
+      path: "/t/:infoHash/watch/:fileName",
+      name: "watch",
       component: () => import("@/views/PlayerView.vue"),
     },
     {

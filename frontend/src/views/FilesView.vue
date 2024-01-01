@@ -1,12 +1,13 @@
 <script setup lang="ts">
 
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 import { main } from "../../wailsjs/go/models";
 import { GetTorrentInfo } from "../../wailsjs/go/main/App";
 
 
 const route = useRoute();
+const router = useRouter();
 
 const loading = ref(true);
 const torrentInfo = ref<main.TorrentInfo | null>(null);
@@ -21,7 +22,11 @@ onMounted(async () => {
   }
 });
 
-const bytesLengthToSize = (length: number): string => {
+const watchVideo = async (fileName: string) => {
+  await router.push({ name: "watch", params: { infoHash: route.params.infoHash, fileName: fileName } });
+};
+
+function bytesLengthToSize(length: number): string {
   const sizes = ["B", "KB", "MB", "GB", "TB"];
   if (length == 0) return "0 B";
   const i = Math.floor(Math.log(length) / Math.log(1024));
@@ -34,8 +39,8 @@ function isVideoFile(fileName: string): boolean {
   return videoExtensions.includes(extension);
 }
 
-function getFileExtension(fileName:string): string {
-  const parts = fileName.split('.');
+function getFileExtension(fileName: string): string {
+  const parts = fileName.split(".");
   return parts[parts.length - 1].toLowerCase();
 }
 </script>
@@ -61,9 +66,10 @@ function getFileExtension(fileName:string): string {
           <tr v-for="file in torrentInfo.files" :key="file.displayPath" class="hover:text-red-600">
             <td class="px-4 py-2">{{ file.displayPath }}</td>
             <td class="px-4 py-2 text-right">{{ bytesLengthToSize(file.length) }}</td>
-            <td class="px-4 py-2 text-right">{{ (file.bytesCompleted / file.length).toFixed(2) * 100  }}%</td>
+            <td class="px-4 py-2 text-right">{{ (file.bytesCompleted / file.length).toFixed(2) * 100 }}%</td>
             <td class="px-4 py-2 text-center">
-              <button v-if="isVideoFile(file.displayPath)" class="px-4 py-2 bg-red-600 rounded text-slate-100">
+              <button v-if="isVideoFile(file.displayPath)" class="px-4 py-2 bg-red-600 rounded text-slate-100"
+                      @click="() => watchVideo(file.displayPath)">
                 <font-awesome-icon icon="fa-play" />
                 Watch
               </button>
