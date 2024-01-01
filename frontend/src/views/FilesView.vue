@@ -4,10 +4,11 @@ import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 import { torrent } from "../../wailsjs/go/models";
 import { GetTorrentInfo } from "../../wailsjs/go/main/App";
-
+import { bytesLengthToSize, isVideoFile } from "@/ultis";
 
 const route = useRoute();
 const router = useRouter();
+const infoHash = typeof route.params.infoHash == "string" ? route.params.infoHash : route.params.infoHash[0];
 
 const loading = ref(true);
 const torrentInfo = ref<torrent.Info | null>(null);
@@ -15,7 +16,6 @@ const torrentInfo = ref<torrent.Info | null>(null);
 onMounted(async () => {
   console.log(route.params.infoHash);
   try {
-    const infoHash = typeof route.params.infoHash == "string" ? route.params.infoHash : route.params.infoHash[0];
     torrentInfo.value = await GetTorrentInfo(infoHash);
   } finally {
     loading.value = false;
@@ -26,23 +26,6 @@ const watchVideo = async (fileName: string) => {
   await router.push({ name: "watch", params: { infoHash: route.params.infoHash, fileName: fileName } });
 };
 
-function bytesLengthToSize(length: number): string {
-  const sizes = ["B", "KB", "MB", "GB", "TB"];
-  if (length == 0) return "0 B";
-  const i = Math.floor(Math.log(length) / Math.log(1024));
-  return (length / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
-}
-
-function isVideoFile(fileName: string): boolean {
-  const extension = getFileExtension(fileName);
-  const videoExtensions = ["mp4", "mov", "avi", "mkv", "mpg", "wmv"];
-  return videoExtensions.includes(extension);
-}
-
-function getFileExtension(fileName: string): string {
-  const parts = fileName.split(".");
-  return parts[parts.length - 1].toLowerCase();
-}
 </script>
 
 <template>
