@@ -5,6 +5,7 @@ import { onMounted, ref } from "vue";
 import { torrent } from "../../wailsjs/go/models";
 import { GetTorrentInfo } from "../../wailsjs/go/main/App";
 import { bytesLengthToSize, isVideoFile } from "@/ultis";
+import BackButton from "@/components/BackButton.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -30,7 +31,10 @@ const watchVideo = async (fileName: string) => {
 
 <template>
   <main class="w-full min-h-full p-4">
-    <p class="text-sm italic">Info Hash: {{ $route.params.infoHash }}</p>
+    <div class="flex justify-between">
+      <p class="text-sm italic">Info Hash: {{ $route.params.infoHash }}</p>
+      <BackButton />
+    </div>
     <div v-if="loading">Loading...</div>
     <template v-else>
       <template v-if="torrentInfo">
@@ -51,7 +55,7 @@ const watchVideo = async (fileName: string) => {
             <td class="px-4 py-2 text-right">{{ bytesLengthToSize(file.length) }}</td>
             <td class="px-4 py-2 text-right">{{ (file.bytesCompleted / file.length).toFixed(2) * 100 }}%</td>
             <td class="px-4 py-2 text-center">
-              <button v-if="isVideoFile(file.displayPath)" class="px-4 py-2 bg-red-600 rounded text-slate-100"
+              <button v-if="isVideoFile(file.displayPath)" class="px-4 py-2 bg-red-600 rounded-sm text-slate-100"
                       @click="() => watchVideo(file.displayPath)">
                 <font-awesome-icon icon="fa-play" />
                 Watch

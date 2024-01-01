@@ -3,6 +3,7 @@ import { useRoute } from "vue-router";
 import toWebVTT from "srt-webvtt";
 import { onMounted, onUnmounted } from "vue";
 import { GetTorrentInfo, StartDownload, StopDownload } from "../../wailsjs/go/main/App";
+import BackButton from "@/components/BackButton.vue";
 
 const route = useRoute();
 const infoHash = typeof route.params.infoHash == "string" ? route.params.infoHash : route.params.infoHash[0];
@@ -53,7 +54,10 @@ const appendSubtitle = (label: string, textTrackUrl: string, isDefault: boolean)
 
 <template>
   <main class="w-full">
-    <h1 class="m-4 text-xl ">{{ fileName }}</h1>
+    <div class="flex justify-between m-4">
+      <h1 class="text-xl ">{{ fileName }}</h1>
+      <BackButton />
+    </div>
     <video controls>
       <source
         :src="videoSrc"

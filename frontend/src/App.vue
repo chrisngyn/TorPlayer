@@ -14,9 +14,6 @@
 <!--                  <router-link class="hover:text-red-700" to="/t/123/files">Video</router-link>-->
 <!--                </li>-->
       </ul>
-      <div>
-        <button class="px-4 py-2 bg-red-600 rounded" @click="$router.back()">Back</button>
-      </div>
     </nav>
     <div class="flex-grow min-w-full text-slate-100">
       <RouterView />
