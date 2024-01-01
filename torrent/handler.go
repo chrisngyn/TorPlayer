@@ -7,6 +7,7 @@ import (
 
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/metainfo"
+	"github.com/anacrolix/torrent/types/infohash"
 )
 
 type Handler struct {
@@ -24,7 +25,7 @@ func (h *Handler) Init(ctx context.Context) error {
 	cfg := torrent.NewDefaultClientConfig()
 	// TODO: change this config (maybe to temp folder)
 	cfg.DataDir = "/Users/lap14897/Desktop/torrent"
-	cfg.Debug = true
+	cfg.Debug = false
 
 	client, err := torrent.NewClient(cfg)
 	if err != nil {
@@ -41,4 +42,10 @@ func (h *Handler) Close(ctx context.Context) error {
 		return errors.Join(errs...)
 	}
 	return nil
+}
+
+func infoHashFromHexString(infoHashHex string) (metainfo.Hash, error) {
+	var infoHash infohash.T
+	err := infoHash.FromHexString(infoHashHex)
+	return infoHash, err
 }

@@ -3,8 +3,6 @@ package torrent
 import (
 	"context"
 	"fmt"
-
-	"github.com/anacrolix/torrent/types/infohash"
 )
 
 type Info struct {
@@ -20,8 +18,7 @@ type File struct {
 }
 
 func (h *Handler) GetTorrentInfo(ctx context.Context, infoHashHex string) (Info, error) {
-	var infoHash infohash.T
-	err := infoHash.FromHexString(infoHashHex)
+	infoHash, err := infoHashFromHexString(infoHashHex)
 	if err != nil {
 		return Info{}, fmt.Errorf("parse infohash: %w", err)
 	}

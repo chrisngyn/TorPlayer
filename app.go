@@ -69,3 +69,13 @@ func (a *App) GetTorrentInfo(infoHashHex string) (torrent.Info, error) {
 	runtime.LogDebug(a.ctx, fmt.Sprintf("GetFiles: %s", infoHashHex))
 	return a.torrentHandler.GetTorrentInfo(a.ctx, infoHashHex)
 }
+
+func (a *App) StartDownload(infoHashHex, path string) error {
+	runtime.LogDebug(a.ctx, fmt.Sprintf("StartDownload: %s %s", infoHashHex, path))
+	return a.torrentHandler.StartDownload(a.ctx, infoHashHex, path)
+}
+
+func (a *App) StopDownload(infoHashHex, path string) error {
+	runtime.LogDebug(a.ctx, fmt.Sprintf("StopDownload: %s %s", infoHashHex, path))
+	return a.torrentHandler.StopDownload(a.ctx, infoHashHex, path)
+}

@@ -3,10 +3,6 @@ package main
 import (
 	"embed"
 	"log"
-	"net/http"
-	"os"
-	"path"
-	"time"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -50,7 +46,7 @@ func main() {
 		WindowStartState:  options.Normal,
 		AssetServer: &assetserver.Options{
 			Assets:     assets,
-			Handler:    NewAssetHandler(),
+			Handler:    app.torrentHandler,
 			Middleware: nil,
 		},
 		Bind: []interface{}{
@@ -98,21 +94,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-type AssetHandler struct {
-	f *os.File
-}
-
-func NewAssetHandler() *AssetHandler {
-	f, err := os.Open("/Users/lap14897/Desktop/test.mp4")
-	if err != nil {
-		panic(err)
-	}
-	return &AssetHandler{f: f}
-}
-
-func (a *AssetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	filename := path.Base(r.URL.Path)
-	http.ServeContent(w, r, filename, time.Now(), a.f)
 }

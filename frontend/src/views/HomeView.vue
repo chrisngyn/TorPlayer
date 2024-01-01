@@ -36,9 +36,7 @@ const getInfo = async () => {
   } else if (fileInput.value) {
     console.log("file");
     const arrBuf = await fileInput.value.arrayBuffer();
-
     infoHash = await AddTorrentFromFileContent(Array.from(new Uint8Array(arrBuf)));
-    console.log(new TextDecoder("utf-8").decode(arrBuf));
   } else {
     return;
   }

@@ -13,3 +13,11 @@ export function AddTorrentFromString(arg1) {
 export function GetTorrentInfo(arg1) {
   return window['go']['main']['App']['GetTorrentInfo'](arg1);
 }
+
+export function StartDownload(arg1, arg2) {
+  return window['go']['main']['App']['StartDownload'](arg1, arg2);
+}
+
+export function StopDownload(arg1, arg2) {
+  return window['go']['main']['App']['StopDownload'](arg1, arg2);
+}
