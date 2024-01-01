@@ -1,5 +1,4 @@
 import "./style.css";
-import "@vime/core/themes/default.css";
 
 import { createApp } from "vue";
 

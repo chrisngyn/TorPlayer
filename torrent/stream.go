@@ -67,7 +67,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.URL.Path, "/stream/") == false {
 		http.Error(w, "invalid url", http.StatusNotFound)
 	}
-	tokens := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+	tokens := strings.SplitN(strings.Trim(r.URL.Path, "/"), "/", 4)
 	if len(tokens) != 4 {
 		http.Error(w, "invalid url", http.StatusNotFound)
 		return

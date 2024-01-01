@@ -18,6 +18,7 @@
     "@vime/core": "^5.4.1",
     "@vime/vue-next": "^5.4.1",
     "pinia": "^2.0.21",
+    "srt-webvtt": "^2.0.0",
     "vue": "^3.2.38",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.1.5"
