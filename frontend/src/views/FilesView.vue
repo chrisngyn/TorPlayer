@@ -2,7 +2,7 @@
 
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
-import { main } from "../../wailsjs/go/models";
+import { torrent } from "../../wailsjs/go/models";
 import { GetTorrentInfo } from "../../wailsjs/go/main/App";
 
 
@@ -10,7 +10,7 @@ const route = useRoute();
 const router = useRouter();
 
 const loading = ref(true);
-const torrentInfo = ref<main.TorrentInfo | null>(null);
+const torrentInfo = ref<torrent.Info | null>(null);
 
 onMounted(async () => {
   console.log(route.params.infoHash);

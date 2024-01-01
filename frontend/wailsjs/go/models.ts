@@ -1,4 +1,4 @@
-export namespace main {
+export namespace torrent {
 	
 	export class File {
 	    displayPath: string;
@@ -16,13 +16,13 @@ export namespace main {
 	        this.bytesCompleted = source["bytesCompleted"];
 	    }
 	}
-	export class TorrentInfo {
+	export class Info {
 	    name: string;
 	    length: number;
 	    files: File[];
 	
 	    static createFrom(source: any = {}) {
-	        return new TorrentInfo(source);
+	        return new Info(source);
 	    }
 	
 	    constructor(source: any = {}) {
