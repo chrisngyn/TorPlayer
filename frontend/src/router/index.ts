@@ -10,6 +10,11 @@ const router = createRouter({
       component: HomeView,
     },
     {
+      path: "/t/:infoHash/files",
+      name: "files",
+      component: () => import("@/views/FilesView.vue"),
+    },
+    {
       path: "/video/:id",
       name: "video",
       component: () => import("@/views/PlayerView.vue"),

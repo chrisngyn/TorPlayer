@@ -29,22 +29,22 @@ const onFileInputChange = (ev: HTMLInputEvent | DragEvent) => {
 };
 
 const getInfo = async () => {
-  let hashInfo = "";
+  let infoHash = "";
   if (textInput.value) {
     console.log("text");
-    hashInfo = await AddTorrentFromString(textInput.value);
+    infoHash = await AddTorrentFromString(textInput.value);
   } else if (fileInput.value) {
     console.log("file");
     const arrBuf = await fileInput.value.arrayBuffer();
 
-    hashInfo = await AddTorrentFromFileContent(Array.from(new Uint8Array(arrBuf)));
+    infoHash = await AddTorrentFromFileContent(Array.from(new Uint8Array(arrBuf)));
     console.log(new TextDecoder("utf-8").decode(arrBuf));
   } else {
     return;
   }
 
-  console.log(hashInfo);
-  // await router.push({ name: "files", params: { id: hashInfo } });
+  console.log(infoHash);
+  await router.push({ name: "files", params: { infoHash: infoHash } });
 };
 
 const disableGetInfo = computed<boolean>(() => {
@@ -54,7 +54,7 @@ const disableGetInfo = computed<boolean>(() => {
 </script>
 
 <template>
-  <main class="flex flex-col justify-center items-center w-full h-full">
+  <main class="flex flex-col justify-center items-center w-full flex-grow h-dvh">
     <h1 class="text-4xl font-bold mb-2">TorPlayer</h1>
     <h3>Xem nhung bo phim yeu thich cua ban</h3>
 

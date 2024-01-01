@@ -8,6 +8,7 @@ import (
 
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/metainfo"
+	"github.com/anacrolix/torrent/types/infohash"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -88,4 +89,45 @@ func (a *App) AddTorrentFromFileContent(content []byte) (string, error) {
 	a.torrentFiles[tor.InfoHash()] = tor
 
 	return tor.InfoHash().String(), nil
+}
+
+type TorrentInfo struct {
+	Name   string `json:"name"`
+	Length int64  `json:"length"`
+	Files  []File `json:"files"`
+}
+
+type File struct {
+	DisplayPath    string `json:"displayPath"`
+	Length         int64  `json:"length"`
+	BytesCompleted int64  `json:"bytesCompleted"`
+}
+
+func (a *App) GetTorrentInfo(infoHashHex string) (TorrentInfo, error) {
+	runtime.LogDebug(a.ctx, fmt.Sprintf("GetFiles: %s", infoHashHex))
+	var infoHash infohash.T
+	err := infoHash.FromHexString(infoHashHex)
+	if err != nil {
+		return TorrentInfo{}, fmt.Errorf("parse infohash: %s", err)
+	}
+	tor, ok := a.torrentFiles[infoHash]
+	if !ok {
+		return TorrentInfo{}, fmt.Errorf("torrent not found")
+	}
+	<-tor.GotInfo()
+
+	torInfo := TorrentInfo{
+		Name:   tor.Name(),
+		Length: tor.Length(),
+		Files:  make([]File, 0),
+	}
+
+	for _, file := range tor.Files() {
+		torInfo.Files = append(torInfo.Files, File{
+			DisplayPath:    file.DisplayPath(),
+			Length:         file.Length(),
+			BytesCompleted: file.BytesCompleted(),
+		})
+	}
+	return torInfo, nil
 }

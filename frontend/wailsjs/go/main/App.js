@@ -9,3 +9,7 @@ export function AddTorrentFromFileContent(arg1) {
 export function AddTorrentFromString(arg1) {
   return window['go']['main']['App']['AddTorrentFromString'](arg1);
 }
+
+export function GetTorrentInfo(arg1) {
+  return window['go']['main']['App']['GetTorrentInfo'](arg1);
+}
