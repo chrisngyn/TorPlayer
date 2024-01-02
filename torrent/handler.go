@@ -12,13 +12,10 @@ import (
 
 type Handler struct {
 	torrentClient *torrent.Client
-	torrentFiles  map[metainfo.Hash]*torrent.Torrent
 }
 
 func NewHandler() *Handler {
-	return &Handler{
-		torrentFiles: make(map[metainfo.Hash]*torrent.Torrent),
-	}
+	return &Handler{}
 }
 
 func (h *Handler) Init(ctx context.Context) error {

@@ -38,7 +38,7 @@ func (h *Handler) getFile(infoHashHex, path string) (*torrent.File, error) {
 		return nil, fmt.Errorf("parse infohash: %w", err)
 	}
 
-	tor, ok := h.torrentFiles[infoHash]
+	tor, ok := h.torrentClient.Torrent(infoHash)
 	if !ok {
 		return nil, fmt.Errorf("torrent not found")
 	}

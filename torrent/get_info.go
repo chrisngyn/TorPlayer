@@ -22,7 +22,7 @@ func (h *Handler) GetTorrentInfo(ctx context.Context, infoHashHex string) (Info,
 	if err != nil {
 		return Info{}, fmt.Errorf("parse infohash: %w", err)
 	}
-	tor, ok := h.torrentFiles[infoHash]
+	tor, ok := h.torrentClient.Torrent(infoHash)
 	if !ok {
 		return Info{}, fmt.Errorf("torrent not found")
 	}

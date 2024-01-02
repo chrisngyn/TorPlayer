@@ -58,7 +58,7 @@ const appendSubtitle = (label: string, textTrackUrl: string, isDefault: boolean)
       <h1 class="text-xl ">{{ fileName }}</h1>
       <BackButton />
     </div>
-    <video controls>
+    <video controls class="w-full">
       <source
         :src="videoSrc"
         type="video/mp4"

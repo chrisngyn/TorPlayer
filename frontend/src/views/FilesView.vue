@@ -18,6 +18,8 @@ onMounted(async () => {
   console.log(route.params.infoHash);
   try {
     torrentInfo.value = await GetTorrentInfo(infoHash);
+  } catch (e) {
+    console.log(e);
   } finally {
     loading.value = false;
   }
@@ -38,7 +40,7 @@ const watchVideo = async (fileName: string) => {
     <div v-if="loading">Loading...</div>
     <template v-else>
       <template v-if="torrentInfo">
-        <h3 class="text-4xl my-4">{{ torrentInfo.name }}</h3>
+        <h3 class="text-4xl my-4 break-words">{{ torrentInfo.name }}</h3>
         <p>Size: {{ bytesLengthToSize(torrentInfo.length) }}</p>
         <table class="table-auto w-full my-4 border-2 border-gray-400">
           <thead>
