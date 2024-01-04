@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import toWebVTT from "srt-webvtt";
+import { getFileExtension } from "@/ultis";
 
 const props = defineProps<{
   title: string;
@@ -10,18 +11,34 @@ const props = defineProps<{
 
 const videoRef = ref<HTMLVideoElement | null>(null);
 const subtitles = ref<{ label: string; url: string; }[]>(props.subtitles ?? []);
+const selectedSubtitle = ref<{ label: string; url: string; } | null>(null);
 
 
 function removeAddSubtitles() {
   for (const track of videoRef.value?.querySelectorAll("track") ?? []) videoRef.value?.removeChild(track);
+  selectedSubtitle.value = null;
 }
 
 async function changeSubtitle(label: string, url: string, srclang?: string) {
   console.log(`Changing subtitle to ${label} at ${url}`);
   removeAddSubtitles();
 
-  const resp = await fetch(url);
-  const textTrackUrl = await toWebVTT(await resp.blob());
+  let textTrackUrl: string = "";
+
+  const ext = getFileExtension(url);
+  switch (ext) {
+    case "srt": {
+      const resp = await fetch(url);
+      textTrackUrl = await toWebVTT(await resp.blob());
+      break;
+    }
+    case "vtt":
+      textTrackUrl = url;
+      break;
+    default:
+      console.log(`Unsupported subtitle format: ${ext}`);
+      return;
+  }
 
   const textTrack = document.createElement("track");
   textTrack.kind = "subtitles";
@@ -30,6 +47,7 @@ async function changeSubtitle(label: string, url: string, srclang?: string) {
   textTrack.src = textTrackUrl;
   textTrack.default = true;
   videoRef.value?.appendChild(textTrack);
+  selectedSubtitle.value = { label, url };
 }
 
 </script>
@@ -47,12 +65,22 @@ async function changeSubtitle(label: string, url: string, srclang?: string) {
       <h3 class="text-lg my-4"><span class="border-b-2 border-red-700 pb-1">Subtitles</span></h3>
       <div class="-mx-1">
         <template v-for="sub in subtitles" :key="sub.url">
-          <button
-            class="bg-stone-900 hover:bg-stone-800 text-slate-100 px-4 py-2 m-1 rounded"
-            @click="changeSubtitle(sub.label, sub.url)"
-          >
-            {{ sub.label }}
-          </button>
+          <template v-if="sub.url == selectedSubtitle?.url">
+            <button
+              class="px-4 py-2 m-1 rounded bg-red-600 hover:bg-red-700 text-slate-100"
+              @click="removeAddSubtitles()"
+            >
+              {{ sub.label }}
+            </button>
+          </template>
+          <template v-else>
+            <button
+              class="px-4 py-2 m-1 rounded bg-stone-900 hover:bg-stone-800 text-slate-100 "
+              @click="changeSubtitle(sub.label, sub.url)"
+            >
+              {{ sub.label }}
+            </button>
+          </template>
         </template>
       </div>
     </div>
