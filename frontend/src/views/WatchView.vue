@@ -3,7 +3,7 @@ import { useRoute } from "vue-router";
 import { onMounted, onUnmounted, ref } from "vue";
 import { GetTorrentInfo, StartDownload, StopDownload } from "../../wailsjs/go/main/App";
 import BackButton from "@/components/BackButton.vue";
-import toWebVTT from "srt-webvtt";
+import VideoPlayer from "@/components/VideoPlayer.vue";
 
 const route = useRoute();
 const infoHash = typeof route.params.infoHash == "string" ? route.params.infoHash : route.params.infoHash[0];
@@ -30,29 +30,6 @@ onUnmounted(async () => {
   await StopDownload(infoHash, fileName);
 });
 
-async function changeSubtitle(label: string, url: string) {
-  console.log(`Changing subtitle to ${label}, ${url}`);
-  removeSubtitle();
-
-  const resp = await fetch(url);
-  const textTrackUrl = await toWebVTT(await resp.blob());
-
-  const textTrack = document.createElement("track");
-  textTrack.kind = "subtitles";
-  textTrack.label = label;
-  textTrack.srclang = "en";
-  textTrack.src = textTrackUrl;
-  textTrack.default = true;
-  const video = document.querySelector("video");
-  video?.appendChild(textTrack);
-}
-
-function removeSubtitle() {
-  const video = document.querySelector("video");
-  video?.querySelectorAll("track").forEach((track) => video.removeChild(track));
-}
-
-
 </script>
 
 <template>
@@ -61,21 +38,6 @@ function removeSubtitle() {
       <h1 class="text-xl ">{{ fileName }}</h1>
       <BackButton />
     </div>
-    <video controls class="w-full">
-      <source
-        :src="videoSrc"
-        type="video/mp4"
-      />
-    </video>
-    <div>
-      <template v-for="sub in subtitles" :key="sub.url">
-        <button
-          class="bg-stone-900 hover:bg-stone-800 text-slate-100 px-4 py-2 m-2 rounded"
-          @click="changeSubtitle(sub.label, sub.url)"
-        >
-          {{ sub.label }}
-        </button>
-      </template>
-    </div>
+    <VideoPlayer :title="fileName" :src="videoSrc" :subtitles="subtitles" />
   </main>
 </template>
