@@ -77,7 +77,7 @@ const disableGetInfo = computed<boolean>(() => {
         @input="onFileInputChange"
         class="border text-stone-100 border-gray-400 hover:border-red-700 file:mr-5 rounded bg-stone-700 file:border-[0px] file:p-4 file:bg-stone-700 file:rounded-l file:text-stone-100 hover:file:cursor-pointer hover:file:bg-stone-800 hover:file:text-red-700"
       />
-      <button class="px-4 py-2 my-3 bg-red-600 rounded disabled:bg-stone-500" @click="getInfo"
+      <button class="px-6 py-2 my-3 bg-red-600 hover:bg-red-700 rounded disabled:bg-stone-500" @click="getInfo"
               :disabled="disableGetInfo">
         Get Info
       </button>

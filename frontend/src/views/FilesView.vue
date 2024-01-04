@@ -57,7 +57,7 @@ const watchVideo = async (fileName: string) => {
             <td class="px-4 py-2 text-right">{{ bytesLengthToSize(file.length) }}</td>
             <td class="px-4 py-2 text-right">{{ (file.bytesCompleted / file.length).toFixed(2) * 100 }}%</td>
             <td class="px-4 py-2 text-center">
-              <button v-if="isVideoFile(file.displayPath)" class="px-4 py-2 bg-red-600 rounded-sm text-slate-100"
+              <button v-if="isVideoFile(file.displayPath)" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-sm text-slate-100"
                       @click="() => watchVideo(file.displayPath)">
                 <font-awesome-icon icon="fa-play" />
                 Watch

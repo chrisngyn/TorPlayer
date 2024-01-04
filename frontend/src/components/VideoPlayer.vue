@@ -17,13 +17,13 @@ function removeAddSubtitles() {
 }
 
 async function changeSubtitle(label: string, url: string, srclang?: string) {
-  console.log(`Changing subtitle to ${label} at ${url}`)
+  console.log(`Changing subtitle to ${label} at ${url}`);
   removeAddSubtitles();
 
   const resp = await fetch(url);
   const textTrackUrl = await toWebVTT(await resp.blob());
 
-  const textTrack = document.createElement("track")
+  const textTrack = document.createElement("track");
   textTrack.kind = "subtitles";
   textTrack.label = label;
   textTrack.srclang = srclang ?? "vn";
@@ -39,19 +39,22 @@ async function changeSubtitle(label: string, url: string, srclang?: string) {
     <video
       ref="videoRef"
       controls autoplay disablepictureinpicture preload crossorigin="anonymous"
-      class="w-full"
+      class="w-full my-2"
       :title="$props.title">
       <source :src="$props.src" />
     </video>
-    <div class="subtitle-controller">
-      <template v-for="sub in subtitles" :key="sub.url">
-        <button
-          class="bg-stone-900 hover:bg-stone-800 text-slate-100 px-4 py-2 m-2 rounded"
-          @click="changeSubtitle(sub.label, sub.url)"
-        >
-          {{ sub.label }}
-        </button>
-      </template>
+    <div class="subtitle-controller mt-4">
+      <h3 class="text-lg my-4"><span class="border-b-2 border-red-700 pb-1">Subtitles</span></h3>
+      <div class="-mx-1">
+        <template v-for="sub in subtitles" :key="sub.url">
+          <button
+            class="bg-stone-900 hover:bg-stone-800 text-slate-100 px-4 py-2 m-1 rounded"
+            @click="changeSubtitle(sub.label, sub.url)"
+          >
+            {{ sub.label }}
+          </button>
+        </template>
+      </div>
     </div>
   </section>
 </template>
