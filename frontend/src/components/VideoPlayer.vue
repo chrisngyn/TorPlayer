@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { arrayBufferToArrayNumber, b64toBlob, getFileExtension } from "@/ultis";
 import { StandardizeSubtitle } from "../../wailsjs/go/main/App";
 
@@ -13,39 +13,64 @@ const videoRef = ref<HTMLVideoElement | null>(null);
 const subtitles = ref<{ label: string; url: string; }[]>(props.subtitles ?? []);
 const selectedSubtitle = ref<{
   label: string;
-  originUrl: string;
-  objectUrl: string;
+  source: string | File;
 } | null>(null);
 
+
 const subSyncMilliseconds = ref<number>(0);
+
+
+watch(selectedSubtitle, async () => {
+  // reset subSyncMilliseconds
+  subSyncMilliseconds.value = 0;
+  // sync subtitle
+  await updateSubtitle()
+});
 
 const addSyncAmount = async (amount: number) => {
   if (!selectedSubtitle.value) return;
   subSyncMilliseconds.value += amount;
 
-  await syncSubtitle(selectedSubtitle.value.label, selectedSubtitle.value.originUrl)
+  await updateSubtitle();
 };
 
-const resetSyncAmount = () => {
+const resetSyncAmount = async () => {
   subSyncMilliseconds.value = 0;
+
+  await updateSubtitle();
+};
+
+async function updateSubtitle() {
+  removeAllSubtitles();
+  await syncSubtitle();
+}
+
+let textTrackObjectURL = "";
+
+function removeAllSubtitles() {
+  for (const track of videoRef.value?.querySelectorAll("track") ?? []) videoRef.value?.removeChild(track);
+
+  if (textTrackObjectURL) URL.revokeObjectURL(textTrackObjectURL);
+}
+
+async function syncSubtitle() {
   if (!selectedSubtitle.value) return;
-  syncSubtitle(selectedSubtitle.value.label, selectedSubtitle.value.originUrl)
-};
 
-const changeSubtitle = async (label: string, url: string) => {
-  subSyncMilliseconds.value = 0;
-  await syncSubtitle(label, url);
-};
+  const sub = selectedSubtitle.value;
 
-async function syncSubtitle(label: string, url: string) {
-  console.log(`Syncing subtitle to ${label} at ${url}`);
-  removeAddSubtitles();
+  console.log(`Syncing subtitle to ${sub.label} from ${typeof sub.source === "string" ? sub?.source : sub?.source.name}`);
 
-  const ext = getFileExtension(url);
-  const resp = await fetch(url);
+  const ext = getFileExtension(typeof sub.source === "string" ? sub?.source : sub?.source.name);
+  let content: ArrayBuffer;
+  if (typeof sub.source === "string") {
+    const resp = await fetch(sub.source);
+    content = await resp.arrayBuffer();
+  } else {
+    content = await sub.source.arrayBuffer();
+  }
   // go function is []byte, but return here is base64 string, so cast to any.
   const subContent = await StandardizeSubtitle(
-    arrayBufferToArrayNumber(await resp.arrayBuffer()),
+    arrayBufferToArrayNumber(content),
     ext,
     subSyncMilliseconds.value || 0,
   ) as any;
@@ -56,21 +81,34 @@ async function syncSubtitle(label: string, url: string) {
 
   const textTrack = document.createElement("track");
   textTrack.kind = "subtitles";
-  textTrack.label = label;
+  textTrack.label = sub.label;
   textTrack.srclang = "vn";
   textTrack.src = textTrackUrl;
   textTrack.default = true;
+
+  // update textTrackObjectURL
+  textTrackObjectURL = textTrackUrl;
+
   videoRef.value?.appendChild(textTrack);
-  selectedSubtitle.value = { label, originUrl: url, objectUrl: textTrackUrl };
 }
 
-function removeAddSubtitles() {
-  for (const track of videoRef.value?.querySelectorAll("track") ?? []) videoRef.value?.removeChild(track);
-
-  if (!selectedSubtitle.value) return;
-  URL.revokeObjectURL(selectedSubtitle.value.objectUrl);
-  selectedSubtitle.value = null;
+interface HTMLInputEvent extends Event {
+  target: HTMLInputElement & EventTarget;
 }
+
+const onFileInputChange = async (ev: HTMLInputEvent | DragEvent) => {
+  let files = (ev as HTMLInputEvent).target.files || (ev as DragEvent).dataTransfer?.files;
+  if (!files?.length) {
+    return;
+  }
+
+  const file = files[0];
+
+  selectedSubtitle.value = {
+    label: file.name,
+    source: file,
+  };
+};
 
 
 </script>
@@ -86,7 +124,7 @@ function removeAddSubtitles() {
     </video>
     <div class="subtitle-controller mt-4 flex flex-col">
       <h3 class="text-lg my-4"><span class="border-b-2 border-red-700 pb-1">Subtitles</span></h3>
-      <div class="flex justify-stretch items-center">
+      <div class="flex justify-stretch items-center py-3 px-1 rounded-sm hover:bg-stone-700">
         <div>
           <h4 class="">Adjustment</h4>
         </div>
@@ -105,12 +143,22 @@ function removeAddSubtitles() {
           </button>
         </div>
       </div>
-      <div class="-mx-1">
+      <div class="flex justify-between items-center py-3 px-1 rounded-sm hover:bg-stone-700">
+        <h4 class="">Add sub from file</h4>
+        <input
+          type="file"
+          name="fileInput"
+          accept=".vtt, .srt, application/x-subrip, text/vtt"
+          @input="onFileInputChange"
+          class="border text-stone-100 border-gray-400 hover:border-red-700 file:mr-5 rounded bg-stone-700 file:border-[0px] file:p-4 file:bg-stone-700 file:rounded-l file:text-stone-100 hover:file:cursor-pointer hover:file:bg-stone-800 hover:file:text-red-700"
+        />
+      </div>
+      <div class="-mx-1 mt-2">
         <template v-for="sub in subtitles" :key="sub.url">
-          <template v-if="sub.url == selectedSubtitle?.originUrl">
+          <template v-if="sub.url == selectedSubtitle?.source">
             <button
               class="px-4 py-2 m-1 rounded bg-red-600 hover:bg-red-700 text-slate-100"
-              @click="resetSyncAmount(); removeAddSubtitles()"
+              @click="selectedSubtitle = null"
             >
               {{ sub.label }}
             </button>
@@ -118,7 +166,7 @@ function removeAddSubtitles() {
           <template v-else>
             <button
               class="px-4 py-2 m-1 rounded bg-stone-900 hover:bg-stone-800 text-slate-100 "
-              @click="changeSubtitle(sub.label, sub.url)"
+              @click="selectedSubtitle = { label: sub.label, source: sub.url }"
             >
               {{ sub.label }}
             </button>
