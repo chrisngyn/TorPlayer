@@ -18,7 +18,12 @@ onMounted(async () => {
 
   console.log("Starting download subtitles");
   const info = await GetTorrentInfo(infoHash);
-  const subtitleFiles = info.files.filter((file) => file.displayPath.endsWith(".srt"));
+  const subtitleFiles = info.files.filter((file) =>
+    file.displayPath.endsWith(".srt") ||
+    file.displayPath.endsWith(".vtt") ||
+    file.displayPath.endsWith(".ass") ||
+    file.displayPath.endsWith(".ssa")
+  );
   for (const file of subtitleFiles) subtitles.value.push({
     label: file.displayPath,
     url: encodeURI(`/stream/${infoHash}/file/${file.displayPath}`),

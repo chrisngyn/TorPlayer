@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { AddTorrentFromFileContent, AddTorrentFromString } from "../../wailsjs/go/main/App";
+import { arrayBufferToArrayNumber } from "@/ultis";
 
 const router = useRouter();
 
@@ -36,7 +37,7 @@ const getInfo = async () => {
   } else if (fileInput.value) {
     console.log("file");
     const arrBuf = await fileInput.value.arrayBuffer();
-    infoHash = await AddTorrentFromFileContent(Array.from(new Uint8Array(arrBuf)));
+    infoHash = await AddTorrentFromFileContent(arrayBufferToArrayNumber(arrBuf));
   } else {
     return;
   }

@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
+	"github.com/chrisngyn/torplayer/subtitle"
 	"github.com/chrisngyn/torplayer/torrent"
 )
 
@@ -78,4 +80,9 @@ func (a *App) StartDownload(infoHashHex, path string) error {
 func (a *App) StopDownload(infoHashHex, path string) error {
 	runtime.LogDebug(a.ctx, fmt.Sprintf("StopDownload: %s %s", infoHashHex, path))
 	return a.torrentHandler.StopDownload(a.ctx, infoHashHex, path)
+}
+
+func (a *App) StandardizeSubtitle(content []byte, fileExtension string, addedMilliseconds int64) (out []byte, err error) {
+	runtime.LogDebug(a.ctx, fmt.Sprintf("StandardizeSubtitle: %s", fileExtension))
+	return subtitle.Normalize(content, fileExtension, time.Duration(addedMilliseconds)*time.Millisecond)
 }
