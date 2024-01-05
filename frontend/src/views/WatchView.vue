@@ -40,7 +40,7 @@ onUnmounted(async () => {
 <template>
   <main class="w-full p-4 box-border">
     <div class="flex justify-between my-1">
-      <h1 class="text-xl ">{{ fileName }}</h1>
+      <h1 class="text-2xl ">{{ fileName }}</h1>
       <BackButton />
     </div>
     <VideoPlayer class="mt-1" :title="fileName" :src="videoSrc" :subtitles="subtitles" />
