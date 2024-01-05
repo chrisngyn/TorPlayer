@@ -17,6 +17,52 @@ const selectedSubtitle = ref<{
   objectUrl: string;
 } | null>(null);
 
+const subSyncMilliseconds = ref<number>(0);
+
+const addSyncAmount = async (amount: number) => {
+  if (!selectedSubtitle.value) return;
+  subSyncMilliseconds.value += amount;
+
+  await syncSubtitle(selectedSubtitle.value.label, selectedSubtitle.value.originUrl)
+};
+
+const resetSyncAmount = () => {
+  subSyncMilliseconds.value = 0;
+  if (!selectedSubtitle.value) return;
+  syncSubtitle(selectedSubtitle.value.label, selectedSubtitle.value.originUrl)
+};
+
+const changeSubtitle = async (label: string, url: string) => {
+  subSyncMilliseconds.value = 0;
+  await syncSubtitle(label, url);
+};
+
+async function syncSubtitle(label: string, url: string) {
+  console.log(`Syncing subtitle to ${label} at ${url}`);
+  removeAddSubtitles();
+
+  const ext = getFileExtension(url);
+  const resp = await fetch(url);
+  // go function is []byte, but return here is base64 string, so cast to any.
+  const subContent = await StandardizeSubtitle(
+    arrayBufferToArrayNumber(await resp.arrayBuffer()),
+    ext,
+    subSyncMilliseconds.value || 0,
+  ) as any;
+
+  const textTrackUrl = URL.createObjectURL(b64toBlob(subContent, "text/vtt"));
+
+  console.log(textTrackUrl);
+
+  const textTrack = document.createElement("track");
+  textTrack.kind = "subtitles";
+  textTrack.label = label;
+  textTrack.srclang = "vn";
+  textTrack.src = textTrackUrl;
+  textTrack.default = true;
+  videoRef.value?.appendChild(textTrack);
+  selectedSubtitle.value = { label, originUrl: url, objectUrl: textTrackUrl };
+}
 
 function removeAddSubtitles() {
   for (const track of videoRef.value?.querySelectorAll("track") ?? []) videoRef.value?.removeChild(track);
@@ -26,28 +72,6 @@ function removeAddSubtitles() {
   selectedSubtitle.value = null;
 }
 
-async function changeSubtitle(label: string, url: string, srclang?: string) {
-  console.log(`Changing subtitle to ${label} at ${url}`);
-  removeAddSubtitles();
-
-  const ext = getFileExtension(url);
-  const resp = await fetch(url);
-  // go function is []byte, but return here is base64 string, so cast to any.
-  const subContent = await StandardizeSubtitle(arrayBufferToArrayNumber(await resp.arrayBuffer()), ext, 0) as any;
-
-  const textTrackUrl = URL.createObjectURL(b64toBlob(subContent, "text/vtt"));
-
-  console.log(textTrackUrl);
-
-  const textTrack = document.createElement("track");
-  textTrack.kind = "subtitles";
-  textTrack.label = label;
-  textTrack.srclang = srclang ?? "vn";
-  textTrack.src = textTrackUrl;
-  textTrack.default = true;
-  videoRef.value?.appendChild(textTrack);
-  selectedSubtitle.value = { label, originUrl: url, objectUrl: textTrackUrl };
-}
 
 </script>
 
@@ -60,14 +84,33 @@ async function changeSubtitle(label: string, url: string, srclang?: string) {
       :title="$props.title">
       <source :src="$props.src" />
     </video>
-    <div class="subtitle-controller mt-4">
+    <div class="subtitle-controller mt-4 flex flex-col">
       <h3 class="text-lg my-4"><span class="border-b-2 border-red-700 pb-1">Subtitles</span></h3>
+      <div class="flex justify-stretch items-center">
+        <div>
+          <h4 class="">Adjustment</h4>
+        </div>
+        <div class="flex-grow px-2 text-right">
+          <p class="text-sm">{{ selectedSubtitle?.label }}</p>
+        </div>
+        <div class="flex justify-between items-center">
+          <button class="px-4 py-2 m-1 rounded bg-stone-900 hover:bg-red-700" @click="resetSyncAmount()">Reset
+          </button>
+          <button class="px-4 py-2 m-1 rounded bg-stone-900 hover:bg-red-700" @click="addSyncAmount(-500)">
+            -0.5s
+          </button>
+          <p class="mx-2">{{ subSyncMilliseconds / 1000 }}s</p>
+          <button class="px-4 py-2 ml-2 rounded bg-stone-900 hover:bg-red-700" @click="addSyncAmount(500)">
+            +0.5s
+          </button>
+        </div>
+      </div>
       <div class="-mx-1">
         <template v-for="sub in subtitles" :key="sub.url">
           <template v-if="sub.url == selectedSubtitle?.originUrl">
             <button
               class="px-4 py-2 m-1 rounded bg-red-600 hover:bg-red-700 text-slate-100"
-              @click="removeAddSubtitles()"
+              @click="resetSyncAmount(); removeAddSubtitles()"
             >
               {{ sub.label }}
             </button>
