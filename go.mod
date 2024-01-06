@@ -7,6 +7,7 @@ toolchain go1.21.5
 require (
 	github.com/anacrolix/torrent v1.53.2
 	github.com/asticode/go-astisub v0.26.1
+	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/wailsapp/wails/v2 v2.7.1
 )
 
