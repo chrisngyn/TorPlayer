@@ -17,8 +17,16 @@ import {
   faVolumeMute,
   faVolumeUp,
 } from "@fortawesome/free-solid-svg-icons";
+import { NotifyAlert } from "../wailsjs/go/main/App";
 
 const app = createApp(App);
+
+app.config.errorHandler = async (err, vm, info) => {
+  console.log("Error: ", err);
+  console.log("Error Info: ", info);
+
+  await NotifyAlert("Error", JSON.parse(JSON.stringify(err)));
+}
 
 app.use(router);
 

@@ -8,6 +8,8 @@ export function AddTorrentFromString(arg1:string):Promise<string>;
 
 export function GetTorrentInfo(arg1:string):Promise<torrent.Info>;
 
+export function NotifyAlert(arg1:string,arg2:string):Promise<void>;
+
 export function StandardizeSubtitle(arg1:Array<number>,arg2:string,arg3:number):Promise<Array<number>>;
 
 export function StartDownload(arg1:string,arg2:string):Promise<void>;

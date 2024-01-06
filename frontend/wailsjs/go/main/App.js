@@ -14,6 +14,10 @@ export function GetTorrentInfo(arg1) {
   return window['go']['main']['App']['GetTorrentInfo'](arg1);
 }
 
+export function NotifyAlert(arg1, arg2) {
+  return window['go']['main']['App']['NotifyAlert'](arg1, arg2);
+}
+
 export function StandardizeSubtitle(arg1, arg2, arg3) {
   return window['go']['main']['App']['StandardizeSubtitle'](arg1, arg2, arg3);
 }

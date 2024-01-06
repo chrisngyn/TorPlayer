@@ -52,6 +52,9 @@ func main() {
 		Bind: []interface{}{
 			app,
 		},
+		ErrorFormatter: func(err error) any {
+			return err.Error()
+		},
 		// Windows platform specific options
 		Windows: &windows.Options{
 			WebviewIsTransparent:              true,
