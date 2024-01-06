@@ -3,6 +3,7 @@ package subtitle
 import (
 	"bytes"
 	"fmt"
+	"html"
 	"strings"
 	"time"
 
@@ -40,5 +41,5 @@ func Normalize(content []byte, fileExt string, addDuration time.Duration) ([]byt
 		return nil, fmt.Errorf("write subtitle: %w", err)
 	}
 
-	return buf.Bytes(), nil
+	return []byte(html.UnescapeString(buf.String())), nil
 }
