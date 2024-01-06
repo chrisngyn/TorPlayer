@@ -97,7 +97,7 @@ interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget;
 }
 
-const onFileInputChange = async (ev: HTMLInputEvent | DragEvent) => {
+const onFileInputChange = async (ev: Event) => {
   let files = (ev as HTMLInputEvent).target.files || (ev as DragEvent).dataTransfer?.files;
   if (!files?.length) {
     return;
@@ -118,7 +118,8 @@ const onFileInputChange = async (ev: HTMLInputEvent | DragEvent) => {
   <section>
     <video
       ref="videoRef"
-      controls autoplay disablepictureinpicture preload crossorigin="anonymous"
+      controls autoplay disablepictureinpicture
+      preload="auto" crossorigin="anonymous"
       class="w-full my-2"
       :title="$props.title">
       <source :src="$props.src" />

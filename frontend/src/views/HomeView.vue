@@ -12,13 +12,15 @@ interface HTMLInputEvent extends Event {
 
 const textInput = ref("");
 const fileInput = ref<File | null>(null);
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const onTextInputChange = (e: Event) => {
   textInput.value = (e.target as HTMLInputElement).value;
   fileInput.value = null;
+  fileInputRef.value!.value = ""; // reset file input value
 };
 
-const onFileInputChange = (ev: HTMLInputEvent | DragEvent) => {
+const onFileInputChange = (ev: Event) => {
   let files = (ev as HTMLInputEvent).target.files || (ev as DragEvent).dataTransfer?.files;
   if (!files?.length) {
     fileInput.value = null;
@@ -74,6 +76,7 @@ const disableGetInfo = computed<boolean>(() => {
       <label for="fileInput" class="block text-sm my-2">Or Upload Torrent File</label>
       <input
         type="file"
+        ref="fileInputRef"
         name="fileInput"
         accept=".torrent"
         @input="onFileInputChange"
