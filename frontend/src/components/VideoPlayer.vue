@@ -2,6 +2,7 @@
 import { ref, watch } from "vue";
 import { arrayBufferToArrayNumber, b64toBlob, getFileExtension } from "@/ultis";
 import { StandardizeSubtitle } from "../../wailsjs/go/main/App";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 const props = defineProps<{
   title: string;
@@ -132,14 +133,15 @@ const onFileInputChange = async (ev: HTMLInputEvent | DragEvent) => {
         <div class="col-span-1 flex flex-col py-3 px-1 rounded-sm hover:bg-stone-700">
           <h4 class="mb-1 font-thin text-sm">Adjustment</h4>
           <div class="flex items-center">
-            <button class="px-4 py-2 m-1 rounded bg-stone-900 hover:bg-red-700" @click="resetSyncAmount()">Reset
+            <button class="px-4 py-2 m-1 rounded bg-stone-900 hover:bg-red-700" @click="resetSyncAmount()">
+              <font-awesome-icon icon="fa-solid fa-eraser" /> Reset
             </button>
             <button class="px-4 py-2 m-1 rounded bg-stone-900 hover:bg-red-700" @click="addSyncAmount(-500)">
-              -0.5s
+              <font-awesome-icon icon="fa-solid fa-backward" /> -0.5s
             </button>
             <p class="mx-2">{{ subSyncMilliseconds / 1000 }}s</p>
             <button class="px-4 py-2 ml-2 rounded bg-stone-900 hover:bg-red-700" @click="addSyncAmount(500)">
-              +0.5s
+              <font-awesome-icon icon="fa-solid fa-forward" /> +0.5s
             </button>
           </div>
         </div>
