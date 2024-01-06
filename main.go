@@ -79,8 +79,8 @@ func main() {
 			WebviewIsTransparent: true,
 			WindowIsTranslucent:  true,
 			About: &mac.AboutInfo{
-				Title:   "Wails Template Vue",
-				Message: "A Wails template based on Vue and Vue-Router",
+				Title:   "TorPlayer",
+				Message: "A simple torrent player built with Go and Wails.",
 				Icon:    icon,
 			},
 			Preferences: &mac.Preferences{

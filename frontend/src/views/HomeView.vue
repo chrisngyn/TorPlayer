@@ -54,8 +54,9 @@ const disableGetInfo = computed<boolean>(() => {
 
 <template>
   <main class="flex flex-col justify-center items-center w-full flex-grow h-dvh">
+    <img src="../assets/logo.png" alt="TorPlayer logo" class="object-scale-down h-48 w-48"/>
     <h1 class="text-4xl font-bold mb-2">TorPlayer</h1>
-    <h3>Xem nhung bo phim yeu thich cua ban</h3>
+    <p>A simple torrent player built with Go and Wails!</p>
 
     <div class="flex flex-col justify-between items-center mt-4">
       <label for="textInput" class="block text-sm mb-2">Input Torrent source</label>
