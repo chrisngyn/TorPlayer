@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
-	"log"
+	"os"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"github.com/chrisngyn/torplayer/torrent"
 )
@@ -11,6 +13,7 @@ import (
 type App struct {
 	ctx context.Context
 
+	storeDirectory string
 	torrentHandler *torrent.Handler
 }
 
@@ -26,8 +29,23 @@ func (a *App) startup(ctx context.Context) {
 	// Perform your setup here
 	a.ctx = ctx
 
-	if err := a.torrentHandler.Init(ctx); err != nil {
-		log.Fatalf("Failed to initialize torrent handler: %v", err)
+	// Get the store directory
+	storeDirectory, err := os.UserHomeDir()
+	if err != nil {
+		runtime.LogFatalf(ctx, "Failed to get user home directory: %v", err)
+	}
+	a.storeDirectory = storeDirectory + "/.torplayer"
+	// Create the store directory if it doesn't exist
+	if _, err := os.Stat(storeDirectory); os.IsNotExist(err) {
+		if err := os.Mkdir(storeDirectory, 0700); err != nil {
+			runtime.LogFatalf(ctx, "Failed to create store directory: %v", err)
+		}
+	}
+
+	if err := a.torrentHandler.Init(ctx, torrent.Config{
+		DataDir: a.storeDirectory,
+	}); err != nil {
+		runtime.LogFatalf(ctx, "Failed to initialize torrent handler: %v", err)
 	}
 }
 
@@ -48,6 +66,10 @@ func (a *App) beforeClose(ctx context.Context) (prevent bool) {
 func (a *App) shutdown(ctx context.Context) {
 	// Perform your teardown here
 	if err := a.torrentHandler.Close(ctx); err != nil {
-		log.Fatalf("Failed to close torrent handler: %v", err)
+		runtime.LogErrorf(ctx, "Failed to close torrent handler: %v", err)
+	}
+
+	if err := os.RemoveAll(a.storeDirectory); err != nil {
+		runtime.LogErrorf(ctx, "Failed to remove store directory: %v", err)
 	}
 }

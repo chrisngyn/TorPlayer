@@ -3,13 +3,13 @@ package torrent
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/anacrolix/torrent"
 	"github.com/gabriel-vasile/mimetype"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 func (h *Handler) StartDownload(ctx context.Context, infoHashHex, path string) error {
@@ -74,8 +74,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	infoHashHex, filePath := tokens[1], tokens[3]
 
-	log.Printf("infoHashHex: %s", infoHashHex)
-	log.Printf("filePath: %s", filePath)
+	runtime.LogDebugf(h.appCtx, "infoHashHex: %s, filePath: %s", infoHashHex, filePath)
 
 	file, err := h.getFile(infoHashHex, filePath)
 	if err != nil {
@@ -90,9 +89,9 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	mime, err := mimetype.DetectReader(reader)
 	if err != nil {
-		log.Printf("Detect mime type fail: %v", err)
+		runtime.LogDebugf(h.appCtx, "Detect mime type fail: %v", err)
 	} else {
-		log.Printf("Mime type: %s", mime.String())
+		runtime.LogDebugf(h.appCtx, "Mime type: %s", mime.String())
 		w.Header().Set("Content-Type", mime.String())
 	}
 
