@@ -7,7 +7,7 @@ export function bytesLengthToSize(length: number): string {
 
 export function isVideoFile(fileName: string): boolean {
   const extension = getFileExtension(fileName);
-  const videoExtensions = ["mp4", "mov", "avi", "mkv", "mpg", "wmv"];
+  const videoExtensions = ["mp4", "webm", "ogg"];
   return videoExtensions.includes(extension);
 }
 
