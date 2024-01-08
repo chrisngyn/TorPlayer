@@ -13,7 +13,7 @@ import (
 type App struct {
 	ctx context.Context
 
-	storeDirectory string
+	config         torrent.Config
 	torrentHandler *torrent.Handler
 }
 
@@ -34,7 +34,7 @@ func (a *App) startup(ctx context.Context) {
 	if err != nil {
 		runtime.LogFatalf(ctx, "Failed to get user home directory: %v", err)
 	}
-	a.storeDirectory = storeDirectory + "/.torplayer"
+	storeDirectory = storeDirectory + "/.torplayer"
 	// Create the store directory if it doesn't exist
 	if _, err := os.Stat(storeDirectory); os.IsNotExist(err) {
 		if err := os.Mkdir(storeDirectory, 0700); err != nil {
@@ -42,9 +42,11 @@ func (a *App) startup(ctx context.Context) {
 		}
 	}
 
-	if err := a.torrentHandler.Init(ctx, torrent.Config{
-		DataDir: a.storeDirectory,
-	}); err != nil {
+	a.config = torrent.Config{
+		DataDir: storeDirectory,
+	}
+
+	if err := a.torrentHandler.Init(ctx, a.config); err != nil {
 		runtime.LogFatalf(ctx, "Failed to initialize torrent handler: %v", err)
 	}
 }
@@ -69,7 +71,7 @@ func (a *App) shutdown(ctx context.Context) {
 		runtime.LogErrorf(ctx, "Failed to close torrent handler: %v", err)
 	}
 
-	if err := os.RemoveAll(a.storeDirectory); err != nil {
+	if err := os.RemoveAll(a.config.DataDir); err != nil {
 		runtime.LogErrorf(ctx, "Failed to remove store directory: %v", err)
 	}
 }

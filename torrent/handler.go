@@ -11,7 +11,7 @@ import (
 )
 
 type Config struct {
-	DataDir string
+	DataDir string `json:"dataDir"`
 }
 
 func (c Config) Validate() error {

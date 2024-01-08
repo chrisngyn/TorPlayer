@@ -1,5 +1,17 @@
 export namespace torrent {
 	
+	export class Config {
+	    dataDir: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Config(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.dataDir = source["dataDir"];
+	    }
+	}
 	export class File {
 	    displayPath: string;
 	    length: number;

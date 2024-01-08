@@ -10,6 +10,10 @@ export function AddTorrentFromString(arg1) {
   return window['go']['main']['App']['AddTorrentFromString'](arg1);
 }
 
+export function GetCurrentConfig() {
+  return window['go']['main']['App']['GetCurrentConfig']();
+}
+
 export function GetTorrentInfo(arg1) {
   return window['go']['main']['App']['GetTorrentInfo'](arg1);
 }

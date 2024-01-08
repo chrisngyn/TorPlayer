@@ -6,6 +6,8 @@ export function AddTorrentFromFileContent(arg1:Array<number>):Promise<string>;
 
 export function AddTorrentFromString(arg1:string):Promise<string>;
 
+export function GetCurrentConfig():Promise<torrent.Config>;
+
 export function GetTorrentInfo(arg1:string):Promise<torrent.Info>;
 
 export function NotifyAlert(arg1:string,arg2:string):Promise<void>;
