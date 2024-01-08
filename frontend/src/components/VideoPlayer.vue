@@ -106,7 +106,7 @@ const onFileInputChange = async (ev: Event) => {
   const file = files[0];
 
   selectedSubtitle.value = {
-    label: `User uploaded: ${file.name}`,
+    label: `File: ${file.name}`,
     source: file,
   };
 };
@@ -157,7 +157,7 @@ const onFileInputChange = async (ev: Event) => {
           />
         </div>
       </div>
-      <div class="mt-2 rounded-sm">
+      <div class="mt-2 rounded-sm" v-if="subtitles.length > 0">
         <h4 class="px-1 py-1 mb-1 text-lg">Available subtitles</h4>
         <div class="flex  gap-2 flex-wrap">
           <template v-for="sub in subtitles" :key="sub.url">
