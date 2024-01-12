@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"os"
+	"path"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
@@ -34,7 +35,7 @@ func (a *App) startup(ctx context.Context) {
 	if err != nil {
 		runtime.LogFatalf(ctx, "Failed to get user home directory: %v", err)
 	}
-	storeDirectory = storeDirectory + "/.torplayer"
+	storeDirectory = path.Join(storeDirectory, ".torplayer")
 	// Create the store directory if it doesn't exist
 	if _, err := os.Stat(storeDirectory); os.IsNotExist(err) {
 		if err := os.Mkdir(storeDirectory, 0700); err != nil {
